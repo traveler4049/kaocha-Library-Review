@@ -3,7 +3,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
     - cron: '0 0 * * 1'
@@ -22,13 +21,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.7'  # Adjust the version as needed
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Build project
+      run: bundle exec rake build  # Adjust the command as needed for your project
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+        verbosity: debug  # Increase verbosity for more detailed logs
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
